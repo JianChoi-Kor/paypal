@@ -1,1 +1,34 @@
+server:
+  port:
 
+spring:
+  application:
+    name: paypal-example
+  output:
+    ansi:
+      enabled: always
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/paypal?autoReconnect=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username:
+    password:
+    hikari:
+      minimumIdle: 5
+      maximumPollSize: 20
+      idleTimeout: 30000
+      pollName: SpringBootJPAHikariCP
+      maxLifetime: 2000000
+      connectionTimeout: 30000
+
+paypal:
+  baseUrl: https://api-m.sandbox.paypal.com
+  clientId:
+  secret:
