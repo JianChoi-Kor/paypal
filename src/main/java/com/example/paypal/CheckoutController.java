@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,13 +23,13 @@ public class CheckoutController {
     private final OrderRepository orderRepository;
 
     @PostMapping
-    public ResponseEntity<OrderResponseDto> checkout(@RequestBody OrderDto orderDto) throws Exception {
+    public ResponseEntity<CreateOrderResponseDto> checkout(@RequestBody OrderDto orderDto) throws Exception {
         PaypalAppContextDto appContext = new PaypalAppContextDto();
         appContext.setReturnUrl("http://localhost:8083/checkout/success");
         appContext.setBrandName("jan92");
         appContext.setLandingPage(PaymentLandingPage.BILLING);
         orderDto.setApplicationContext(appContext);
-        OrderResponseDto orderResponse = paypalHttpClient.createOrder(orderDto);
+        CreateOrderResponseDto orderResponse = paypalHttpClient.createOrder(orderDto);
 
         Order order = new Order();
         order.setPaypalOrderId(orderResponse.getId());
@@ -50,5 +47,12 @@ public class CheckoutController {
         orderRepository.save(targetOrder);
 
         return ResponseEntity.ok().body("Payment success");
+    }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<?> getOrderDetails(@PathVariable String orderId) throws Exception {
+        OrderDetailsResponseDto orderDetailsResponse = paypalHttpClient.getOrderDetails(orderId);
+
+        return ResponseEntity.ok(orderDetailsResponse);
     }
 }

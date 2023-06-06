@@ -19,7 +19,7 @@ public class AccessTokenResponseDto {
     @JsonProperty("app_id")
     private String applicationId;
     @JsonProperty("expires_in")
-    private int expiresIn;
+    private Long expiresIn;
     private String nonce;
     @JsonIgnore
     private Instant expiration;

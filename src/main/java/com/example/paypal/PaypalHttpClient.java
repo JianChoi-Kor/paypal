@@ -1,10 +1,7 @@
 package com.example.paypal;
 
 import com.example.paypal.config.PaypalConfig;
-import com.example.paypal.dto.AccessTokenResponseDto;
-import com.example.paypal.dto.ClientTokenDto;
-import com.example.paypal.dto.OrderDto;
-import com.example.paypal.dto.OrderResponseDto;
+import com.example.paypal.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +67,7 @@ public class PaypalHttpClient {
         return objectMapper.readValue(content, ClientTokenDto.class);
     }
 
-    public OrderResponseDto createOrder(OrderDto orderDto) throws Exception {
+    public CreateOrderResponseDto createOrder(OrderDto orderDto) throws Exception {
         AccessTokenResponseDto accessTokenDto = getAccessToken();
         String payload = objectMapper.writeValueAsString(orderDto);
 
@@ -84,7 +81,22 @@ public class PaypalHttpClient {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         String content = response.body();
 
-        return objectMapper.readValue(content, OrderResponseDto.class);
+        return objectMapper.readValue(content, CreateOrderResponseDto.class);
+    }
+
+    public OrderDetailsResponseDto getOrderDetails(String orderId) throws Exception {
+        AccessTokenResponseDto accessTokenDto = getAccessToken();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(createUrl(paypalConfig.getBaseUrl(), ORDER_CHECKOUT, orderId)))
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TYPE + accessTokenDto.getAccessToken())
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        String content = response.body();
+
+        return objectMapper.readValue(content, OrderDetailsResponseDto.class);
     }
 
     private String encodeBasicCredentials() {

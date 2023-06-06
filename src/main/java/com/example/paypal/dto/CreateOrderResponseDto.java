@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OrderResponseDto {
+public class CreateOrderResponseDto {
     private String id;
     private OrderStatus status;
     private List<LinkDto> links;
